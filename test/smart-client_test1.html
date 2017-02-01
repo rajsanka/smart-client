@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>smart-client test</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../smart-security.html">
+    <link rel="import" href="../smart-client.html">
+    <link rel="import" href="../smart-config.html">
+    <link rel="import" href="../../iron-ajax/iron-ajax.html">
+  </head>
+  <body>
+      <dom-module id="test-app">
+          <template>
+            <smart-config id="config" server="192.168.1.33" port="9081" tenant="kidtravel"></smart-config>
+            <smart-security id="login" user="9880664340", password="test" on-smart-login-success="handleLogin"></smart-security>
+            <smart-client id="client" flow="TrackFlow" flow-event="GetCurrentTrip" on-smart-error="handleError" on-smart-response="handleResponse" ></smart-client>
+          </template>
+
+            <script>
+                Polymer({
+                    is: "test-app",
+                    properties: {
+                      postTo: Object,
+                      postData: Object
+                    },
+
+                    ready: function() {
+                      /*var element = this.$.client;
+                      console.log("Element is: " + element);
+                      this.postData = {};
+                      this.postData['identity'] = '9880664340';
+                      this.postData['password'] = 'test1';
+                      this.postData['type'] = 'custom';
+                      this.postTo = {};
+                      this.postTo['FlowAdmin'] = 'Security';
+                      element.postSmart(this.postTo, this.postData);
+
+                      this.postData = {};
+                      element.postSmart(this.postTo, this.postData);*/
+
+                      this.$.login.loginSmart();
+                    },
+
+                    handleLogin: function(e) {
+                      this.postTo = {};
+                      this.postTo['Device'] = "9902530998";
+                      this.postData = {};
+                      this.$.client.postSmart(this.postTo, this.postData);
+                    },
+
+                    handleError : function(e) {
+                        console.log(e.detail.error);
+                    },
+
+                    handleResponse : function(e) {
+                        console.log(e.detail.responses);
+                    }
+                  });
+            </script>
+     </dom-module>
+     <test-app></test-app>
+  </body>
+</html>

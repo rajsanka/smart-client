@@ -1,0 +1,59 @@
+<link rel="import" href="../polymer/polymer.html">
+<link ref="import" href="smart-client.html">
+<link ref="import" href="smart-config.html">
+
+<dom-module id="smart-security">
+    <template>
+        <smart-config id="globals"></smart-config>
+        <smart-client id="client" flow="Security" flow-event="Authenticate" on-smart-error="handleError" on-smart-response="storeSessionId" ></smart-client>
+    </template>
+  <script>
+    (function() {
+        var sessionId;
+
+        var SESSIONID = "sessionId";
+
+        Polymer({
+          is: 'smart-security',
+
+          properties: {
+              user: String,
+              password: String
+          },
+
+          loginSmart: function() {
+              var postData = {};
+              postData['identity'] = this.user;
+              postData['password'] = this.password;
+              postData['type'] = 'custom';
+              var postTo = {};
+              postTo['FlowAdmin'] = 'Security';
+              this.$.client.postSmart(postTo, postData);
+          },
+
+          get sessionId() {
+              return sessionId;
+          },
+
+          storeSessionId: function(evt) {
+              var response = evt.detail.responses[0];
+              sessionId = response[SESSIONID];
+              this.$.globals.sessionId = sessionId;
+              this.fire("smart-login-success", { "sessionId": sessionId });
+          },
+
+          handleError: function(evt) {
+            var error = evt.detail.errors[0];
+            if (error != undefined) {
+                if (error.context.startsWith("Invalid credentials for")){
+                    this.fire("smart-invalid-login", { "user" : user });
+                } else {
+                    this.fire("smart-error-login", { "code" : error.code, "context" : error.context });
+                }
+            }
+          }
+
+        });
+    })();
+  </script>
+</dom-module>

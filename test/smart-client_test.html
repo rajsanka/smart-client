@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>smart-client test</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../smart-client.html">
+  </head>
+  <body>
+    <test-fixture id="basic">
+      <template>
+          <smart-client id="client" flow="Security" flow-event="Authenticate" post-to="{{postTo}}" data="{{postData}}" ></smart-client>
+      </template>
+    </test-fixture>
+
+    <script>
+      var postTo = {};
+      var postData = {};
+
+      suite('smart-client', function() {
+        test('instantiating the element works', function() {
+          var element = fixture('basic');
+          console.log("Element is: " + element);
+          assert.equal(element.is, 'smart-client');
+        });
+        test('Posting to server works', function() {
+          var element = fixture('basic');
+          console.log("Element is: " + element);
+          assert.equal(element.is, 'smart-client');
+          postTo = {};
+          postTo['FlowAdmin'] = 'Security';
+          postData = {};
+          postData['identity'] = '9880664340';
+          postData['password'] = 'test';
+          postData['type'] = 'custom';
+          element.postData();
+        });
+      });
+    </script>
+  </body>
+</html>
