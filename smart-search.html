@@ -1,0 +1,67 @@
+<link rel="import" href="../polymer/polymer.html">
+<link ref="import" href="smart-client.html">
+
+<dom-module id="smart-search">
+    <template>
+        <smart-client id="client" flow="{{flow}}" flow-event="SearchEvent" on-smart-error="_handleError" on-smart-response="_handleResults" ></smart-client>
+    </template>
+  <script>
+    (function() {
+
+        Polymer({
+          is: 'smart-search',
+
+          properties: {
+              flow: String,
+              group: String,
+              query: Object,
+              sortBy: String,
+              pageNum: { 
+                  type: Number,
+                  value: 1
+              },
+              pageSize: {
+                  type: Number,
+                  value: 20
+              },
+              ascending: {
+                  type: Boolean,
+                  value: true
+              },
+              searchResult: {
+                  type: Array,
+                  notify: true
+              }
+          },
+
+          search: function() {
+              var postData = {};
+              postData['group'] = this.group;
+              postData['queryMap'] = this.query;
+              postData['pageNum'] = this.pageNum;
+              postData['pageSize'] = this.pageSize;
+              if (this.sortBy != undefined) {
+                  postData['sortBy'] = this.sortBy;
+                  postData['ascending'] = this.ascending;
+              }
+              var postTo = {};
+              postTo['FlowAdmin'] = this.flow;
+              this.$.client.postSmart(postTo, postData);
+          },
+
+          _handleResults: function(evt) {
+              var response = evt.detail.responses[0];
+              this.searchResult = response['searchResult'];
+          },
+
+          _handleError: function(evt) {
+            var error = evt.detail.errors[0];
+            if (error != undefined) {
+                this.fire("smart-search-error", { "code" : error.code, "context" : error.context });
+            }
+          }
+
+        });
+    })();
+  </script>
+</dom-module>

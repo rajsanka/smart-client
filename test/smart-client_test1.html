@@ -9,6 +9,7 @@
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
 
+    <link rel="import" href="../smart-search.html">
     <link rel="import" href="../smart-security.html">
     <link rel="import" href="../smart-client.html">
     <link rel="import" href="../smart-config.html">
@@ -20,6 +21,7 @@
             <smart-config id="config" server="192.168.1.33" port="9081" tenant="kidtravel"></smart-config>
             <smart-security id="login" user="9880664340", password="test" on-smart-login-success="handleLogin"></smart-security>
             <smart-client id="client" flow="TrackFlow" flow-event="GetCurrentTrip" on-smart-error="handleError" on-smart-response="handleResponse" ></smart-client>
+            <smart-search id="search" flow="StudentFlow" group="Driver" query="{{query}}" search-result="{{result}}"></smart-security>
           </template>
 
             <script>
@@ -27,7 +29,13 @@
                     is: "test-app",
                     properties: {
                       postTo: Object,
-                      postData: Object
+                      postData: Object,
+                      query: Object,
+                      result: {
+                          type: Array,
+                          notify: true,
+                          observer: "_searchChanged"
+                      }
                     },
 
                     ready: function() {
@@ -47,11 +55,19 @@
                       this.$.login.loginSmart();
                     },
 
+                    _searchChanged: function() {
+                        console.log(this.result);
+                    },
+
                     handleLogin: function(e) {
                       this.postTo = {};
                       this.postTo['Device'] = "9902530998";
                       this.postData = {};
                       this.$.client.postSmart(this.postTo, this.postData);
+
+                      this.query = {};
+                      this.query.driverName = "*";
+                      this.$.search.search();
                     },
 
                     handleError : function(e) {

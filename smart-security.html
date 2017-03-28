@@ -43,7 +43,7 @@
           },
 
           handleError: function(evt) {
-            var error = evt.detail.errors[0];
+            var error = evt.detail.error[0];
             if (error != undefined) {
                 if (error.context.startsWith("Invalid credentials for")){
                     this.fire("smart-invalid-login", { "user" : user });
