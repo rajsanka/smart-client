@@ -1,6 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 <link ref="import" href="../iron-ajax/iron-ajax.html">
 <link ref="import" href="smart-config.html">
+<link ref="import" href="smart-admin-config.html">
 
 <!--
 `smart-client`
@@ -12,6 +13,7 @@ connects to smart server and retrieves data
 <dom-module id="smart-client">
   <template>
       <smart-config id="globals"></smart-config>
+      <smart-admin-config id="adminglobals"></smart-admin-config>
       <iron-ajax id="poster"
                  method="POST"
                  content-type="application/json"
@@ -36,6 +38,10 @@ connects to smart server and retrieves data
           is: 'smart-client',
 
           properties: {
+            asAdmin: {
+                type:Boolean,
+                value: false
+            },
             server: {
               type: String,
               value: '192.168.1.36'
@@ -54,10 +60,12 @@ connects to smart server and retrieves data
               type: String
             },
             _postTo: {
-              type: Object
+              type: Object,
+              value: {}
             },
             _postData: {
-              type: Object
+              type: Object,
+              value: {}
             },
             _sessionId: {
               type: String
@@ -68,6 +76,11 @@ connects to smart server and retrieves data
               this.server = this.$.globals.server;
               this.port = this.$.globals.port;
               this.tenant = this.$.globals.tenant;
+
+              if (this.asAdmin)
+              {
+                  this.tenant = this.$.adminglobals.tenant;
+              }
           },
 
           _dataChanged: function() {
@@ -102,6 +115,10 @@ connects to smart server and retrieves data
           _createHeaders: function(sess) {
               var hdrs = {};
               //var sess = this.$.globals.sessionId;
+              if (this.asAdmin)
+              {
+                  sess = this.$.adminglobals.sessionId;
+              }
               if (sess != undefined) {
                 hdrs["Session-Id"] = sess;
               }
@@ -113,6 +130,10 @@ connects to smart server and retrieves data
               this._postTo = todata;
               this._postData = data;
               this._sessionId = this.$.globals.sessionId;
+              if (this.asAdmin)
+              {
+                  sess = this.$.adminglobals.sessionId;
+              }
               this.$.poster.generateRequest();
           },
 

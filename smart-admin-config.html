@@ -1,0 +1,37 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id="smart-admin-config">
+  <script>
+    (function() {
+        var values = {};
+
+        Polymer({
+          is: 'smart-admin-config',
+
+          ready: function() {
+            for (var i = 0; i < this.attributes.length; ++i) {
+                var attr = this.attributes[i];
+                values[attr.nodeName] = attr.nodeValue;
+                console.log("Set: " + attr.nodeName + ":" + attr.nodeValue);
+            }
+          },
+
+          get tenant() {
+              return "SmartOwner";
+          },
+
+          set sessionId(sess) {
+              values["sessionId"] = sess;
+          },
+
+          get sessionId() {
+              return values["sessionId"];
+          },
+
+          get values() {
+              return values;
+          }
+        });
+    })();
+  </script>
+</dom-module>
